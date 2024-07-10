@@ -18,7 +18,7 @@ if type_input == 1:
         print(r)
         print(url)
         soup = BeautifulSoup(r.text, "lxml")
-        box = soup.find("div", class_="_1YokD2 _3Mn1Gg")
+        box = soup.find("div", class_="tUxRFH")
         # print(soup)
 
         names = box.find_all("div", class_="_4rR01T")
