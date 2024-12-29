@@ -11,7 +11,7 @@ from selenium.common.exceptions import (
 )
 import time
 
-def scrape_promoter_details(url):
+def scrape_promoter_and_ceo_details(url):
     driver = webdriver.Chrome()
 
     all_data = []  # List to hold all the scraped data
@@ -79,12 +79,16 @@ def scrape_promoter_details(url):
                     "PAN": "",
                     "GSTIN": "",
                     "District": "",
-                    "Taluk": ""
+                    "Taluk": "",
+                    "CEO/MD Name": "",
+                    "Designation": "",
+                    "CEO/MD PAN": "",
+                    "DIN": ""
                 }
 
                 modal_rows = modal.find_elements(By.CSS_SELECTOR, '.row')
 
-                # Attempt to scrape available data without failing on missing elements
+                # Scraping Promoter Details
                 for modal_row in modal_rows:
                     try:
                         cols = modal_row.find_elements(By.CSS_SELECTOR, 'div.col-md-3')
@@ -100,15 +104,36 @@ def scrape_promoter_details(url):
                             elif 'registration number' in label:
                                 data["Registration Number"] = value
                             elif label == 'pan':
-                                data["Promoter PAN"] = value
+                                data["PAN"] = value
                             elif label == 'gstin':
-                                data["Promoter GSTIN"] = value
+                                data["GSTIN"] = value
                             elif label == 'district':
                                 data["District"] = value
                             elif label == 'taluk':
                                 data["Taluk"] = value
                     except (NoSuchElementException, IndexError):
-                        # If any element is missing, skip and continue
+                        continue
+
+                # Scraping CEO/MD Details
+                for modal_row in modal_rows:
+                    try:
+                        cols = modal_row.find_elements(By.CSS_SELECTOR, 'div.col-md-3')
+                        for i in range(0, len(cols), 2):
+                            label_elem = cols[i].find_element(By.TAG_NAME, 'p')
+                            value_elem = cols[i+1].find_element(By.TAG_NAME, 'p')
+
+                            label = label_elem.text.strip().replace(':', '').lower()
+                            value = value_elem.text.strip()
+
+                            if 'authorized signatory' in label:
+                                data["CEO/MD Name"] = value
+                            elif 'pan' in label and 'promoter' not in label:
+                                data["CEO/MD PAN"] = value
+                            elif 'din' in label:
+                                data["DIN"] = value
+                            elif 'designation' in label:
+                                data["Designation"] = value
+                    except (NoSuchElementException, IndexError):
                         continue
 
                 # Add the data if at least one field is filled
@@ -132,14 +157,14 @@ def scrape_promoter_details(url):
                 print(f"An error occurred while processing button {index + 1}: {e}")
                 continue
 
-        with open('promoter_details.csv', 'w', newline='', encoding='utf-8') as file:
-            fieldnames = ["Promoter Name", "Registration Number", "PAN", "GSTIN", "District", "Taluk"]
+        with open('promoter_and_ceo_details.csv', 'w', newline='', encoding='utf-8') as file:
+            fieldnames = ["Promoter Name", "Registration Number", "PAN", "GSTIN", "District", "Taluk", "CEO/MD Name", "Designation", "CEO/MD PAN", "DIN"]
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writeheader()
             for data in all_data:
                 writer.writerow(data)
 
-        print("\nData scraped and saved to promoter_details.csv")
+        print("\nData scraped and saved to promoter_and_ceo_details.csv")
 
     except Exception as e:
         print(f"An error occurred: {e}")
@@ -148,4 +173,4 @@ def scrape_promoter_details(url):
         driver.quit()
 
 url = 'https://rera.karnataka.gov.in/projectViewDetails'  # Replace with the actual URL if different
-scrape_promoter_details(url)
+scrape_promoter_and_ceo_details(url)
