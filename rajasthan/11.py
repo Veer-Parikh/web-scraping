@@ -17,7 +17,7 @@ try:
     # Step 2: Select "Jaipur" from the dropdown
     district_dropdown = driver.find_element(By.ID, "DistrictId")
     select = Select(district_dropdown)
-    select.select_by_visible_text("Jaipur")
+    select.select_by_visible_text("Kota")
     time.sleep(1)
 
     # Step 3: Click the "Search" button
