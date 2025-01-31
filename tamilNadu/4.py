@@ -1,45 +1,57 @@
-from selenium.common.exceptions import NoSuchElementException
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.common.keys import Keys
-import pandas as pd
+import csv
 import time
+
+# Load WebDriver
 driver = webdriver.Chrome()
-from selenium.common.exceptions import NoSuchElementException
 
-def scrape_directors_by_xpath(driver):
-    try:
-        # Use the XPath to find all director/partner name elements
-        director_sections = driver.find_elements(By.XPATH, "//div[contains(@class, 'col-lg-8') and contains(@class, 'col-md-8') and contains(@class, 'col-sm-12') and contains(@class, 'col-xs-12')]")
-        
-        director_names = []
-        for section in director_sections:
-            if "Director / Partner Name :" in section.text:
-                # Extract the relevant text
-                director_names.append(section.text.replace("Director / Partner Name :", "").strip())
-        return director_names
-    except NoSuchElementException:
-        print("Director / Partner information not found on this page.")
-        return []
+# Input CSV file containing promoter & project links
+input_file = "final.csv"  # Update filename if needed
+output_file = "scraped_promoters.csv"
 
-def scrape_promoter_by_xpath(driver):
-    try:
-        # Use the XPath to locate the promoter information
-        promoter_section = driver.find_element(By.XPATH, "//label[contains(text(),'Promoter Detail')]")  # Update with the actual class for promoter
-        promoter_name = promoter_section.text.strip()
-        return promoter_name
-    except NoSuchElementException:
-        print("Promoter information not found on this page.")
-        return None
+# Read promoter links (first column only)
+promoter_links = []
+with open(input_file, "r", encoding="utf-8") as file:
+    reader = csv.reader(file)
+    next(reader, None)  # Skip header row if exists
+    for row in reader:
+        if row and len(row) > 0:  # Skip empty rows
+            promoter_links.append(row[0])  # First column (Promoter Details)
 
-# Example usage
-driver.get("https://rera.tn.gov.in/public-view1/building/pfirm/7d309a20-8d3d-11ef-8b35-69430d6e07d6")
-directors = scrape_directors_by_xpath(driver)
-promoter = scrape_promoter_by_xpath(driver)
+# Print extracted links for debugging
+print("Extracted Promoter Links:", promoter_links)
+# Open the output CSV for writing
+with open(output_file, "w", newline="", encoding="utf-8") as file:
+    fieldnames = ["Type", "Firm Name", "Email", "Mobile 1", "Mobile 2", "Landline", "PAN Card", "Company Registration No"]
+    writer = csv.DictWriter(file, fieldnames=fieldnames)
+    writer.writeheader()
 
-scraped_details = {
-    "Directors": directors,
-    "Promoter": promoter
-}
-print(scraped_details)
+    # Loop through each promoter link and scrape data
+    for link in promoter_links:
+        try:
+            driver.get(link)
+            time.sleep(2)  # Let the page load
+
+            # Extract details
+            data = {
+                "Type": driver.find_element(By.XPATH, "XPATH_TO_TYPE").text,
+                "Firm Name": driver.find_element(By.XPATH, "XPATH_TO_FIRM_NAME").text,
+                "Email": driver.find_element(By.XPATH, "XPATH_TO_EMAIL").text,
+                "Mobile 1": driver.find_element(By.XPATH, "XPATH_TO_MOBILE_1").text,
+                "Mobile 2": driver.find_element(By.XPATH, "XPATH_TO_MOBILE_2").text,
+                "Landline": driver.find_element(By.XPATH, "XPATH_TO_LANDLINE").text,
+                "PAN Card": driver.find_element(By.XPATH, "XPATH_TO_PAN").text,
+                "Company Registration No": driver.find_element(By.XPATH, "XPATH_TO_COMPANY_REG").text,
+            }
+
+            # Write to CSV
+            writer.writerow(data)
+            print(f"Scraped: {data['Firm Name']}")
+
+        except Exception as e:
+            print(f"Failed to scrape {link}: {e}")
+
+# Close WebDriver
+driver.quit()
+print(f"Scraping completed. Results saved to {output_file}")
