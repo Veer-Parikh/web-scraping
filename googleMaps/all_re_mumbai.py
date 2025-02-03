@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 # from webdriver_manager.chrome import ChromeDriverManager
 
 # Load CSV File
-csv_file = "real_estate_links_mumbai.csv"
+csv_file = "new.csv"
 df = pd.read_csv(csv_file, sep="\t")  # If it's tab-separated
 
 urls = df['URL'].tolist()
@@ -26,7 +26,7 @@ driver = webdriver.Chrome()
 def scrape_google_maps(url):
     try:
         driver.get(url)
-        time.sleep(5)  # Wait for dynamic content to load
+        time.sleep(2)  # Wait for dynamic content to load
 
         # Extract Business Name
         try:
@@ -40,15 +40,13 @@ def scrape_google_maps(url):
         except:
             category = "N/A"
 
-        # Extract Rating
         try:
-            rating = driver.find_element(By.XPATH, "//span[contains(@class, 'Aq14fc')]").text.strip()
+            rating = driver.find_element(By.XPATH, "//div[contains(@class, 'F7nice')]//span[@aria-hidden='true']").text.strip()
         except:
             rating = "N/A"
 
-        # Extract Number of Reviews
         try:
-            num_reviews = driver.find_element(By.XPATH, "//span[contains(@class, 'AYi5wd')]").text.strip()
+            num_reviews = driver.find_element(By.XPATH, "//span[contains(@aria-label, 'reviews')]").text.strip()
         except:
             num_reviews = "N/A"
 
