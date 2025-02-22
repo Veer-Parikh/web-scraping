@@ -68,7 +68,7 @@ for index, link in enumerate(project_links):
 
 # Save the scraped data to a CSV file
 projects_df = pd.DataFrame(projects_data)
-projects_df.to_csv("project_details1.csv", index=False)
+projects_df.to_csv("project_details1_indore.csv", index=False)
 
 # Close the browser
 driver.quit()

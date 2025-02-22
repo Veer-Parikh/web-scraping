@@ -34,7 +34,7 @@ project_links = []
 
 # Loop through all 8 pages
 page_count = 1
-while page_count <= 15:
+while page_count <= 16:
     # Find all project links on the current page
     link_elements = driver.find_elements(By.XPATH, "//td[@class='text-center']/a[@class='btn btn-sm btn-round btn-warning']")
     for link in link_elements:
@@ -44,10 +44,10 @@ while page_count <= 15:
     print(f"Scraped Page {page_count}, Links Found: {len(link_elements)}")
     
     # Click the 'Next' button if not on the last page
-    if page_count < 8:
-        next_button = driver.find_element(By.ID, "example_next")
-        next_button.click()
-        time.sleep(5)  # Allow the next page to load
+    
+    next_button = driver.find_element(By.ID, "example_next")
+    next_button.click()
+    time.sleep(5)  # Allow the next page to load
     page_count += 1
 
 # Save links to a CSV using pandas

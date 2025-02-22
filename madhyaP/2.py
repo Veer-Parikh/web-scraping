@@ -64,4 +64,4 @@ projects_df.to_csv("project_details.csv", index=False)
 driver.quit()
 
 # Print completion message
-print("Scraping completed. Project details saved to 'project_details.csv'.")
+print("Scraping completed. Project details saved to 'project_details_indore.csv'.")
