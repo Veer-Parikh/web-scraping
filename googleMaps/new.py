@@ -13,14 +13,14 @@ driver = webdriver.Chrome()
 
 # Open Google Maps Search for Real Estate Agents in Mumbai
 logging.info("Opening Google Maps search...")
-driver.get("https://www.google.com/maps/search/real+estate+agents+in+mumbai/")
+driver.get("https://www.google.com/maps/search/real+estate+agents+in+pune/")
 
 # Wait for the page to load
 logging.info("Waiting for the page to load...")
 time.sleep(10)
 
 # Scroll down to load all results
-def scroll_down(scrollable_element, pause_time=3, max_scrolls=50):
+def scroll_down(scrollable_element, pause_time=3, max_scrolls=30):
     scrolls = 0
     logging.info("Scrolling through search results...")
     while scrolls < max_scrolls:
@@ -60,7 +60,7 @@ for element in business_elements:
 
 # Save to CSV
 df = pd.DataFrame(href_links)
-df.to_csv("real_estate_links_mumbai.csv", index=False)
+df.to_csv("real_estate_links_pune.csv", index=False)
 logging.info("Data saved to 'real_estate_links_mumbai.csv'.")
 
 # Close the browser
