@@ -11,7 +11,7 @@ import time
 driver = webdriver.Chrome()
 
 # URL to start with
-start_url = "https://rera.tn.gov.in/registered-building/tn"
+start_url = "https://rera.tn.gov.in/registered-layout/tn"
 
 # Storage for scraped data
 scraped_data = []
@@ -101,7 +101,7 @@ except Exception as e:
 finally:
     # Save the scraped data to a CSV file
     df = pd.DataFrame(scraped_data)
-    df.to_csv("scraped_links1.csv", index=False)
+    df.to_csv("scraped_links2.csv", index=False)
     print("Scraping completed. Data saved to 'scraped_links.csv'.")
 
     # Close the browser
